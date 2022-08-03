@@ -1,3 +1,5 @@
 .env
 fireBaseConfig.json
 test.http
+
+/store

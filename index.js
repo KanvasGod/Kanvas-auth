@@ -23,6 +23,9 @@ admin.initializeApp({
 const puts = require('./routes/postRoutes');
 app.use('/v1', puts);
 
+const gets = require('./routes/getRoutes');
+app.use('/v1', gets);
+
 app.listen(PORT, () => {
     console.log(`Accounts api on port ${PORT}`);
 })
