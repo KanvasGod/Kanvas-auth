@@ -1,5 +1,6 @@
 const { serverCipherSpeak, getHash } = require('../../libs/crypto');
-const { randomCode } = require('../../libs/randomCode')
+const { Store } = require('../../libs/presistantData');
+const { setTime } = require('../../libs/timeConvert');
 const jwt = require('../../libs/jsonTokens');
 const { genUid } = require('../../libs/uidGen');
 const admin = require('firebase-admin');
@@ -16,8 +17,8 @@ async function createCustomer(payload) {
 }
 
 async function readWriteDB(body, siteOrigin) {
-    const email = genUid(body.email)
-    const userName = genUid(body.userName)
+    const email = genUid(body.email);
+    const userName = genUid(body.userName);
     const createAccount = db.ref(`Emails/${email}`);
     const createUserName = db.ref(`UserNameRefs/${userName}`);
     const checked = {};
@@ -34,11 +35,11 @@ async function readWriteDB(body, siteOrigin) {
     })
     
     if(checked["emailTaken"]) {
-        return {status: 409, message: "Email Taken"}
+        return {status: 409, output: "Email Taken"}
     }
 
     if(checked["userNameTaken"]) {
-        return {status: 409, message: "Username Taken"}
+        return {status: 409, output: "Username Taken"}
     }
 
     const finishedForm = {
@@ -78,21 +79,31 @@ async function readWriteDB(body, siteOrigin) {
         ref: email
     });
 
-    failedCalls["output"] = genUid(`${body.email}${randomCode(4)}`)
+    // site level visiblity
+    const adminRefs = db.ref(`AdminLookup/${genUid(siteOrigin)}`);
+    const ref = adminRefs.child(genUid(siteOrigin + body.email));
+    ref.set(body.email);
+
+    const extra = {
+        origin: siteOrigin
+    }
+
+    let auth = {
+        authToken: jwt.createToken(body.email, 'logIn', extra),
+        refreshToken: jwt.createToken(body.email, 'refresh', extra)
+    }
+
+    failedCalls["output"] = auth
 
     return failedCalls
 }
 
-
-
 exports.createNewUser = (req, res) => {
     const body = req.body;
-    // start here collect clients hostname
-    const origin = req.headers.origin || "http://test_api.com";
+    const origin = req.headers.origin || "http://test_gav.com";
 
     async function applyAction() {
         const clientInput = await readWriteDB(body, origin);
-        
         if(clientInput.failed) {
             const keys = Object.keys(clientInput.failed);
             if(keys.length > 0) {
@@ -105,14 +116,15 @@ exports.createNewUser = (req, res) => {
                 const userRefs = userNameRefs.child();
                 userRefs.set(package);
             }
-            //  send to socket for keys and return socket id
-            let socketRef = {
-                user: clientInput.user,
-                origin: origin,
-                passKey:clientInput.output
-            }
-            console.log(socketRef);
-            res.status(clientInput.status).json(clientInput.output)
+            // send to socket for keys and return socket id
+            const activeTokens = new Store('refreshTokens.json', setTime('2h'));
+            newKey = new Object();
+            newKey[genUid(`${body.email}${origin}`)] = clientInput.output
+            activeTokens.add(newKey);
+            
+            res.status(clientInput.status).json(clientInput.output);
+        } else {
+            res.status(clientInput.status).send(clientInput.output);
         }
     }
     applyAction();

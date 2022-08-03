@@ -6,7 +6,7 @@ createToken = (userId, type, extra={}) => {
         refresh: process.env.REFRESH_TOKEN_SECRET
     }
 
-    let expiresIn = type === 'refresh' ? '2h' : '1h';
+    let expiresIn = type === 'refresh' ? '1d' : '1h';
     
     extra.uid = userId
     return `Bearer ${jwt.sign(
