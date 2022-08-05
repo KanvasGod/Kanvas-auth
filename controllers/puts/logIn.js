@@ -53,7 +53,9 @@ async function readWriteDB(body, siteOrigin) {
             
             if (!check2) {
                 adminRefs = db.ref(`AdminLookup/${genUid(siteOrigin)}`);
-                adminRefs.child(genUid(siteOrigin + checked.email)).set(checked.email)
+                adminRefs.child(genUid(siteOrigin + checked.email)).set({
+                    uid: checked.email
+                })
             }
 
             const extra = {

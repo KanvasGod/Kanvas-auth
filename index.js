@@ -26,6 +26,9 @@ app.use('/v1', puts);
 const gets = require('./routes/getRoutes');
 app.use('/v1', gets);
 
+const account = require('./routes/updateAccount');
+app.use('/account', account);
+
 app.listen(PORT, () => {
     console.log(`Accounts api on port ${PORT}`);
 })

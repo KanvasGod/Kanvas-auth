@@ -14,8 +14,6 @@ async function readWriteDB(body, siteOrigin) {
     }
 }
 
-
-
 exports.logOutUser = (req, res) => {
     const origin = req.headers.origin || "http://test_api.com";
  

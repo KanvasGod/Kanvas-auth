@@ -10,6 +10,4 @@ const logInController = require(`${controller}/logIn`);
 router.put('/log_in', logInController.fetchUserAccount);
 
 
-
-
 module.exports = router;
