@@ -29,7 +29,7 @@ async function readWriteDB(body, siteOrigin) {
         checked["emailTaken"] = result
     })
 
-    const userNames = await createUserName.on('value', data => {
+    const userNames = await createUserName.once('value', data => {
         let result = data.val() !== null ? true : false;
         checked["userNameTaken"] = result
     })
@@ -82,7 +82,9 @@ async function readWriteDB(body, siteOrigin) {
     // site level visiblity
     const adminRefs = db.ref(`AdminLookup/${genUid(siteOrigin)}`);
     const ref = adminRefs.child(genUid(siteOrigin + body.email));
-    ref.set(body.email);
+    ref.set({
+        uid: body.email
+    });
 
     const extra = {
         origin: siteOrigin
@@ -100,7 +102,7 @@ async function readWriteDB(body, siteOrigin) {
 
 exports.createNewUser = (req, res) => {
     const body = req.body;
-    const origin = req.headers.origin || "http://test_gav.com";
+    const origin = req.headers.origin || "http://test_api.com";
 
     async function applyAction() {
         const clientInput = await readWriteDB(body, origin);
