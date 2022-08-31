@@ -9,7 +9,6 @@ const db = admin.database();
 async function createCustomer(payload) {
     const stripe = require('stripe')(process.env.STRIPE_KEY_TEST);
     const costomer = await stripe.customers.create({
-        name: payload.name,
         email: payload.email,
         description: 'Kanvas development customer.'
     })
@@ -56,7 +55,6 @@ async function readWriteDB(body, siteOrigin) {
     failedCalls["failed"] = {}
 
     const customerId = await createCustomer({
-        name: body.name,
         email: body.email
     })
 
@@ -80,7 +78,7 @@ async function readWriteDB(body, siteOrigin) {
     });
 
     // site level visiblity
-    const adminRefs = db.ref(`AdminLookup/${genUid(siteOrigin)}`);
+    const adminRefs = db.ref(`SiteLookup/${genUid(siteOrigin)}`);
     const ref = adminRefs.child(genUid(siteOrigin + body.email));
     ref.set({
         uid: body.email

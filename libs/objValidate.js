@@ -14,7 +14,7 @@ const objValidate = (inspect, obj) => {
             return false
         }
 
-        const refs = inspect[indexs[i]].toLowerCase().split(' ');
+        const refs = inspect[indexs[i]].toLowerCase();
         let type = typeof(obj[indexs[i]]);
 
         if(type === 'object') {
@@ -24,12 +24,9 @@ const objValidate = (inspect, obj) => {
             }
         }
 
-        if(type !== refs[0]) {
+        if(type !== refs) {
             return false
         }
-        
-        console.log(refs[1]);
-
         i++;
     }
 
