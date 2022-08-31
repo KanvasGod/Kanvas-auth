@@ -46,13 +46,13 @@ async function readWriteDB(body, siteOrigin) {
         const matchHashes = compareHash(body.password, checked.password, process.env.USER_DATA_KEY);
         if(matchHashes) {
             let check2 = null
-            let adminRefs = db.ref(`AdminLookup/${genUid(siteOrigin)}/${genUid(siteOrigin + checked.email)}`);
+            let adminRefs = db.ref(`SiteLookup/${genUid(siteOrigin)}/${genUid(siteOrigin + checked.email)}`);
             await adminRefs.once('value', data => {
                 check2 = data.val() !== null ? true : false;
             })
             
             if (!check2) {
-                adminRefs = db.ref(`AdminLookup/${genUid(siteOrigin)}`);
+                adminRefs = db.ref(`SiteLookup/${genUid(siteOrigin)}`);
                 adminRefs.child(genUid(siteOrigin + checked.email)).set({
                     uid: checked.email
                 })
