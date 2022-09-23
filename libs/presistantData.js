@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { setTime } = require('./timeConvert');
 
 const checkForFile = (fileName, data, timer) => {
     const str = fileName.split('\\');
@@ -20,21 +21,27 @@ const checkForFile = (fileName, data, timer) => {
     while (i < keys.length) {
         createData[keys[i]] = {
             value: data[keys[i]],
-            destroy: timer || 'no-decay'
+            destroy: timer
         }
         i++;
     }
     
-    i = 0
+    i = 0;
+
     keys = Object.keys(newForm);
+
     while (i < keys.length) {
+
         if(!createData[keys[i]]) {
-            createData[keys[i]] = newForm[keys[i]]
+            const decayAt = new Date(newForm[keys[i]].destroy);
+            console.log();
+            if(decayAt > setTime())
+                createData[keys[i]] = newForm[keys[i]];
         }
-        i++
+        i++;
     }
     const form = JSON.stringify(createData);
-
+    console.log(form);
     fs.writeFileSync(fileName, form);
 }
 
@@ -90,28 +97,23 @@ createPath = (letter, path) => {
 }
 
 class Store {
-    constructor(dirPath, addTimer='no-decay') {
+    constructor(dirPath, addTimer=null) {
         this.path = path.join(__dirname, `../store/${dirPath}`);
-        this.addTimer = addTimer
-        this.date = new Date().getTime();
+        this.addTimer = addTimer;
     }
 
     add(data) {
         // create path
         const key = Object.keys(data)[0][0].toUpperCase();
         // action
-        let date = null;
-        if(this.addTimer !== 'no-decay') {
-            date = new Date(this.date + this.addTimer)
-        }
-        checkForFile(createPath(key, this.path), data, date);
+        checkForFile(createPath(key, this.path), data, this.addTimer);
     }
 
     remove(find) {
         // create path
         const key = find[0].toUpperCase();
         const newPath = createPath(key, this.path);
-        const obj = getFile(newPath, this.date);
+        const obj = getFile(newPath, setTime());
 
         if(find) {
             delete obj[find];
@@ -122,7 +124,7 @@ class Store {
     fetch(find) {
         const key = find[0].toUpperCase();
         const newPath = createPath(key, this.path);
-        const obj = getFile(newPath, this.date);
+        const obj = getFile(newPath, setTime());
 
         if(obj) {
             const result = sortObject(find, obj, newPath);

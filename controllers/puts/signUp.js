@@ -117,9 +117,9 @@ exports.createNewUser = (req, res) => {
                 userRefs.set(package);
             }
             // send to socket for keys and return socket id
-            const activeTokens = new Store('refreshTokens.json', setTime('2h'));
             newKey = new Object();
-            newKey[genUid(`${body.email}${origin}`)] = clientInput.output
+            const activeTokens = new Store('refreshTokens.json', setTime('2d'));
+            newKey[genUid(`${body.email}${origin}`)] = serverCipherSpeak(clientInput.output.refreshToken, process.env.USER_DATA_KEY);
             activeTokens.add(newKey);
             
             res.status(clientInput.status).json(clientInput.output);
