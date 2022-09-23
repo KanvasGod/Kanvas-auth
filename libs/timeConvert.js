@@ -1,8 +1,15 @@
 setTime = (str) => {
     const getDigit = new RegExp(/\d+/g);
     const getletter = new RegExp(/\D+/g);
-    let num = str.match(getDigit)[0]
-    let letter = str.match(getletter)[0]
+    const d = new Date();
+    const currentTime = d.getTime();
+
+    if(str === undefined) {
+        return new Date(currentTime);
+    }
+
+    let num = str.match(getDigit)[0];
+    let letter = str.match(getletter)[0];
 
     const timeTypes = {
         seconds: 1000,
@@ -17,7 +24,9 @@ setTime = (str) => {
         mon: (((1000 * 60) * 60) * 24) * 31
     }
 
-    return timeTypes[letter] * parseFloat(num)
+    const timeToAdd = timeTypes[letter] * parseFloat(num);
+    const incTime = new Date(timeToAdd + currentTime);
+    return incTime;
 }
 
 module.exports = {

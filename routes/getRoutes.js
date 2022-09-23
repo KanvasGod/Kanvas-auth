@@ -5,10 +5,14 @@ const controller = '../controllers/gets';
 
 // middle ware //
 const isAuth = require('../middleware/isAuth');
+const isRefresh = require('../middleware/isRefresh');
 //===========//
 
 const signUpController = require(`${controller}/logOut`);
-router.put('/log_out', isAuth, signUpController.logOutUser);
+router.get('/log_out', isAuth, signUpController.logOutUser);
+
+const refreshTokenController = require(`${controller}/refreshToken`);
+router.get('/refresh', isRefresh, refreshTokenController.refresh);
 
 
 

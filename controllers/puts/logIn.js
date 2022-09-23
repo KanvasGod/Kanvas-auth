@@ -84,9 +84,9 @@ exports.fetchUserAccount = (req, res) => {
     async function applyAction() {
         const clientInput = await readWriteDB(body, origin);
         if(clientInput.email) {
-            const activeTokens = new Store('refreshTokens.json', setTime('2h'));
+            const activeTokens = new Store('refreshTokens.json', setTime('2d'));
             newKey = new Object();
-            newKey[genUid(`${clientInput.email}${origin}`)] = clientInput.output
+            newKey[genUid(`${clientInput.email}${origin}`)] = serverCipherSpeak(clientInput.output.refreshToken, process.env.USER_DATA_KEY);
             activeTokens.add(newKey);
         }
 

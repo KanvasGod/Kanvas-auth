@@ -12,8 +12,8 @@ router.put('/sign_up', schema, signUpController.createNewUser);
 const logInController = require(`${controller}/logIn`);
 router.put('/log_in', logInController.fetchUserAccount);
 
-// const test = require(`${controller}/test`);
-// router.put('/test', test.output);
+const test = require(`${controller}/test`);
+router.put('/test', test.output);
 
 
 module.exports = router;
